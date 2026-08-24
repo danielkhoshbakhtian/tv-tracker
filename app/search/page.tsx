@@ -14,17 +14,19 @@ export default function SearchPage() {
     
     setIsSearching(true);
     
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
-      }
-    };
+    const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+    console.log("Checking TMDB Key length:", apiKey ? apiKey.length : "MISSING!");
 
     try {
-      const res = await fetch(`https://api.themoviedb.org/3/search/tv?query=${query}`, options);
+      const res = await fetch(`https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(query)}`, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        }
+      });
       const data = await res.json();
+      console.log("TMDB Response:", data);
       setResults(data.results || []);
     } catch (error) {
       console.error("TMDB Search Error:", error);
