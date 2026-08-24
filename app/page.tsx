@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Ticket, UserPlus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function FrontDoor() {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Check if we are already logged in when the app opens
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/home");
+      } else {
+        setLoading(false);
+      }
+    };
+    checkSession();
+  }, [router]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,17 +31,29 @@ export default function FrontDoor() {
     
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) alert(error.message);
-      // Once logged in, middleware or a router.push will take them to the /home dashboard
+      if (error) {
+        alert(error.message);
+        setLoading(false);
+      } else {
+        router.push("/home");
+      }
     } else {
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) alert(error.message);
-      else alert("Application accepted! Check your email to laminate your card.");
+      if (error) {
+        alert(error.message);
+        setLoading(false);
+      } else {
+        alert("Application accepted! You can now log in.");
+        setIsLogin(true);
+        setLoading(false);
+      }
     }
-    setLoading(false);
   };
 
-  // If no choice is made yet, show the two big counter options
+  if (loading) {
+    return <main className="min-h-screen bg-store-dark flex items-center justify-center text-store-yellow font-bold">Checking Membership...</main>;
+  }
+
   if (isLogin === null) {
     return (
       <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-store-dark">
@@ -60,11 +87,9 @@ export default function FrontDoor() {
     );
   }
 
-  // The Form View (Slides up after picking an option)
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-store-dark">
       <div className="w-full max-w-md bg-zinc-900 p-8 rounded-2xl border-2 border-zinc-800 shadow-2xl relative overflow-hidden">
-        {/* Decorative Tape Stripe */}
         <div className={`absolute top-0 left-0 w-full h-2 ${isLogin ? 'bg-store-blue' : 'bg-store-yellow'}`}></div>
         
         <h2 className="text-3xl font-bold mb-6 text-white">
