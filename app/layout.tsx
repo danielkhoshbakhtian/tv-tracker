@@ -23,12 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Safari status bar color hack */}
-        <meta name="theme-color" content="#0a0a0a" />
+        {/* Updated Safari status bar to match Blockbuster Blue */}
+        <meta name="theme-color" content="#001A6E" />
       </head>
-      <body className={`${inter.className} bg-store-dark text-white min-h-screen antialiased pb-24`}>
+      <body className={`${inter.className} bg-store-blue text-white min-h-screen antialiased pb-24`}>
         {children}
-        {/* The Navigation Bar will sit at the bottom of every page */}
         <BottomNav />
       </body>
     </html>

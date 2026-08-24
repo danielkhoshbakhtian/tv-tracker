@@ -19,11 +19,11 @@ export default function DVDCase({ title, isStaffPick = false, sticker = null }: 
     const DOUBLE_PRESS_DELAY = 300;
 
     if (now - lastTap < DOUBLE_PRESS_DELAY) {
-      // Double Tap!
-      triggerHaptic();
-      alert(`Logged next episode of ${title}! (Undo window starts now)`);
+      if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
+      alert(`Logged next episode of ${title}!`);
     } else {
-      // Single Tap opens the case
       setTimeout(() => {
         if (Date.now() - now >= DOUBLE_PRESS_DELAY) {
           setIsModalOpen(true);
@@ -33,43 +33,42 @@ export default function DVDCase({ title, isStaffPick = false, sticker = null }: 
     setLastTap(now);
   };
 
-  const triggerHaptic = () => {
-    if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
-      window.navigator.vibrate(50);
-    }
-  };
-
   return (
     <>
       <div 
         onClick={handleInteraction}
-        className="relative w-32 h-48 shrink-0 rounded bg-zinc-800 border-l-4 border-zinc-950 shadow-[6px_0_15px_rgba(0,0,0,0.6)] cursor-pointer flex flex-col justify-between p-2 overflow-hidden transform transition-transform active:scale-95 group"
+        className="relative w-32 h-[190px] shrink-0 bg-black rounded-sm border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,0.5)] cursor-pointer transform transition-transform active:scale-95 flex overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none group-hover:from-white/20 transition-all"></div>
+        {/* Black Plastic Spine */}
+        <div className="w-3 h-full bg-zinc-900 border-r-2 border-black flex-shrink-0"></div>
 
-        {isStaffPick && (
-          <div className="absolute top-2 right-2 text-store-yellow drop-shadow-md">
-            <Star fill="currentColor" size={20} />
-          </div>
-        )}
+        {/* White Paper Cover Insert */}
+        <div className="flex-1 bg-white relative overflow-hidden flex flex-col p-2">
+          
+          {isStaffPick && (
+            <div className="absolute top-2 right-2 text-store-blue">
+              <Star fill="#FFCC00" stroke="black" strokeWidth={2} size={24} />
+            </div>
+          )}
 
-        <h3 className="font-black text-white text-lg leading-tight mt-4 break-words relative z-10 drop-shadow-md">
-          {title}
-        </h3>
+          <h3 className="font-black text-black text-lg leading-tight mt-2 break-words relative z-10">
+            {title}
+          </h3>
 
-        {sticker === "rewatch" && (
-          <div className="absolute bottom-2 right-[-10px] bg-store-neon text-black text-[10px] font-black uppercase tracking-widest px-4 py-1 transform -rotate-12 shadow-md">
-            Rewatch
-          </div>
-        )}
-        {sticker === "overdue" && (
-          <div className="absolute bottom-2 left-[-10px] bg-yellow-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 transform rotate-12 shadow-md">
-            Overdue
-          </div>
-        )}
+          {/* Dynamic Stickers */}
+          {sticker === "rewatch" && (
+            <div className="absolute bottom-2 right-[-10px] bg-store-neon text-black text-[10px] font-black uppercase tracking-widest px-4 py-1 transform -rotate-12 border-2 border-black shadow-sm">
+              Rewatch
+            </div>
+          )}
+          {sticker === "overdue" && (
+            <div className="absolute bottom-2 left-[-10px] bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 transform rotate-12 border-2 border-black shadow-sm">
+              Overdue
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* The Pop-up Modal */}
       <CaseModal 
         title={title} 
         isOpen={isModalOpen} 
