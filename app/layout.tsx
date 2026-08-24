@@ -1,46 +1,36 @@
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import BottomNav from "@/components/BottomNav";
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import BottomNav from '@/components/BottomNav'
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const viewport: Viewport = {
-  themeColor: "#050511",
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false, 
-};
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "TV Tracker",
-  description: "Custom TV tracking dashboard",
-  manifest: "/manifest.json",
+  title: 'Showcase',
+  description: 'Your personal video store for tracking TV.',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "TV Tracker",
-  },
-  icons: {
-    apple: "/icon-192.png",
-  },
-};
+    statusBarStyle: 'black-translucent',
+    title: 'Showcase'
+  }
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-[#050511] text-gray-100 antialiased selection:bg-fuchsia-500 selection:text-white`}>
-        <main className="min-h-screen pb-20">
-          {children}
-        </main>
-        {/* Navigation Bar injected here */}
+      <head>
+        {/* Safari status bar color hack */}
+        <meta name="theme-color" content="#0a0a0a" />
+      </head>
+      <body className={`${inter.className} bg-store-dark text-white min-h-screen antialiased pb-24`}>
+        {children}
+        {/* The Navigation Bar will sit at the bottom of every page */}
         <BottomNav />
       </body>
     </html>
-  );
+  )
 }

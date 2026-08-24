@@ -1,84 +1,118 @@
-import React from 'react';
+"use client";
 
-// A reusable component to draw horizontal scrolling rows of show cards
-const ShelfRow = ({ title, showProgressBar = false }: { title: string, showProgressBar?: boolean }) => {
-  // Creating an array of 5 empty slots to hold our placeholder cards
-  const placeholderCards = Array.from({ length: 5 });
+import { useState } from "react";
+import { Ticket, UserPlus } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-  return (
-    <section className="mb-8">
-      <h2 className="text-sm font-bold text-cyan-400 mb-3 tracking-widest uppercase pl-4">{title}</h2>
-      
-      {/* Horizontal scrolling container */}
-      <div className="flex overflow-x-auto gap-4 px-4 pb-4 snap-x snap-mandatory hide-scrollbar">
-        
-        {placeholderCards.map((_, index) => (
-          <div key={index} className="flex-none w-[130px] snap-start">
-            
-            {/* Empty Poster Card */}
-            <div className="w-full aspect-[2/3] bg-gray-900/60 border border-cyan-500/20 rounded-xl mb-2 flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.05)]">
-              <span className="text-gray-700 font-bold text-2xl">?</span>
-            </div>
-            
-            {/* Dummy Title Text */}
-            <div className="h-3 w-3/4 bg-gray-800 rounded animate-pulse mb-1"></div>
-            
-            {/* Optional Progress Bar for Up Next / Watching rows */}
-            {showProgressBar && (
-              <div className="w-full bg-gray-800 h-1.5 rounded-full mt-2">
-                <div 
-                  className="bg-cyan-400 h-1.5 rounded-full" 
-                  style={{ width: `${Math.floor(Math.random() * 60) + 20}%` }}
-                ></div>
-              </div>
-            )}
-          </div>
-        ))}
+export default function FrontDoor() {
+  const [isLogin, setIsLogin] = useState<boolean | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-      </div>
-    </section>
-  );
-};
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    if (isLogin) {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) alert(error.message);
+      // Once logged in, middleware or a router.push will take them to the /home dashboard
+    } else {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) alert(error.message);
+      else alert("Application accepted! Check your email to laminate your card.");
+    }
+    setLoading(false);
+  };
 
-export default function Home() {
-  return (
-    <div className="pt-8 pb-12 overflow-x-hidden">
-      
-      {/* Header */}
-      <header className="px-4 mb-8">
-        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-cyan-400 drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]">
-          TRACKER
-        </h1>
-      </header>
-
-      {/* Tonight's Priority (Feature 11) - Large Featured Card */}
-      <section className="px-4 mb-10">
-        <h2 className="text-sm font-bold text-fuchsia-400 mb-3 tracking-widest uppercase">Tonight's Priority</h2>
-        
-        <div className="bg-gray-900/80 border border-fuchsia-500/30 rounded-2xl aspect-video relative overflow-hidden flex flex-col justify-end p-5 shadow-[0_0_20px_rgba(217,70,239,0.15)]">
-          {/* Fake backdrop image gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050511] via-[#050511]/60 to-transparent z-0"></div>
-          
-          <div className="relative z-10 flex justify-between items-end">
-            <div className="w-2/3">
-              <div className="h-6 w-3/4 bg-gray-700 rounded animate-pulse mb-2"></div>
-              <div className="h-4 w-1/2 bg-gray-800 rounded animate-pulse"></div>
-            </div>
-            <button className="bg-gradient-to-br from-fuchsia-600 to-fuchsia-700 text-white font-bold py-2 px-5 rounded-xl shadow-lg active:scale-95 transition-transform">
-              ✓ Log
-            </button>
-          </div>
+  // If no choice is made yet, show the two big counter options
+  if (isLogin === null) {
+    return (
+      <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-store-dark">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-black italic tracking-tighter text-store-yellow drop-shadow-[0_0_10px_rgba(255,204,0,0.5)]">
+            SHOWCASE
+          </h1>
+          <p className="text-store-blue font-bold mt-2 uppercase tracking-widest bg-store-yellow inline-block px-2 transform -skew-x-12">
+            Video Rental
+          </p>
         </div>
-      </section>
 
-      {/* Smart Up Next Queue (Feature 1) */}
-      <ShelfRow title="Up Next" showProgressBar={true} />
+        <div className="w-full max-w-md space-y-4">
+          <button 
+            onClick={() => setIsLogin(true)}
+            className="w-full flex items-center justify-center gap-3 bg-store-blue text-white py-5 rounded-xl font-bold text-xl border-4 border-store-blue hover:bg-transparent hover:text-store-blue transition-all"
+          >
+            <Ticket size={28} />
+            Returning Member
+          </button>
+          
+          <button 
+            onClick={() => setIsLogin(false)}
+            className="w-full flex items-center justify-center gap-3 bg-store-yellow text-store-blue py-5 rounded-xl font-bold text-xl border-4 border-store-yellow hover:bg-transparent hover:text-store-yellow transition-all"
+          >
+            <UserPlus size={28} />
+            Fill out an Application
+          </button>
+        </div>
+      </main>
+    );
+  }
 
-      {/* Custom Shelves (Feature 9) */}
-      <ShelfRow title="Currently Watching" showProgressBar={true} />
-      <ShelfRow title="Watchlist" />
-      <ShelfRow title="Waiting on New Season" />
+  // The Form View (Slides up after picking an option)
+  return (
+    <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-store-dark">
+      <div className="w-full max-w-md bg-zinc-900 p-8 rounded-2xl border-2 border-zinc-800 shadow-2xl relative overflow-hidden">
+        {/* Decorative Tape Stripe */}
+        <div className={`absolute top-0 left-0 w-full h-2 ${isLogin ? 'bg-store-blue' : 'bg-store-yellow'}`}></div>
+        
+        <h2 className="text-3xl font-bold mb-6 text-white">
+          {isLogin ? "Scan Membership Card" : "New Application"}
+        </h2>
+        
+        <form onSubmit={handleAuth} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-zinc-400 mb-1">Email Address</label>
+            <input 
+              type="email" 
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-zinc-800 text-white border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-store-yellow focus:ring-1 focus:ring-store-yellow"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-zinc-400 mb-1">Password</label>
+            <input 
+              type="password" 
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-zinc-800 text-white border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-store-yellow focus:ring-1 focus:ring-store-yellow"
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            className={`w-full py-4 rounded-xl font-bold text-lg mt-4 transition-colors ${
+              isLogin 
+                ? 'bg-store-blue text-white hover:bg-blue-800' 
+                : 'bg-store-yellow text-store-blue hover:bg-yellow-500'
+            }`}
+          >
+            {loading ? "Processing..." : (isLogin ? "Log In" : "Submit Application")}
+          </button>
+        </form>
 
-    </div>
+        <button 
+          onClick={() => setIsLogin(null)}
+          className="mt-6 text-zinc-500 hover:text-zinc-300 text-sm font-medium w-full text-center"
+        >
+          ← Back to Front Counter
+        </button>
+      </div>
+    </main>
   );
 }
