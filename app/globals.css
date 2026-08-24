@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Hide scrollbar for tactile shelves */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
