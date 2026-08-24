@@ -1,27 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { LogOut, Award } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DVDCase from "@/components/DVDCase";
 
 export default function ProfileCounter() {
   const router = useRouter();
-  const [email, setEmail] = useState<string | null>("Loading...");
+  const prototypeEmail = "vip.member@showcase.app";
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      // FIX: Tell TypeScript to use a fallback if email is undefined
-      if (user) setEmail(user.email ?? "Unknown Email");
-    };
-    getUser();
-  }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
+  const handleSignOut = () => {
+    router.push("/"); // Simulates logging out
   };
 
   return (
@@ -44,7 +32,7 @@ export default function ProfileCounter() {
           <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-600 mb-6">Official Member</p>
           
           <div className="font-mono text-sm border-b border-zinc-400 pb-2 mb-2">
-            ID: {email}
+            ID: {prototypeEmail}
           </div>
           <div className="flex justify-between items-end mt-4">
             <div className="font-mono">
