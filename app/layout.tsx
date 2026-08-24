@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,7 +10,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false, // Prevents iOS from zooming in when you tap buttons
+  userScalable: false, 
 };
 
 export const metadata: Metadata = {
@@ -37,6 +38,8 @@ export default function RootLayout({
         <main className="min-h-screen pb-20">
           {children}
         </main>
+        {/* Navigation Bar injected here */}
+        <BottomNav />
       </body>
     </html>
   );
