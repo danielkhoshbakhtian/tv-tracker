@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+body {
+  background-color: #001A6E;
+  color: white;
+}
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;

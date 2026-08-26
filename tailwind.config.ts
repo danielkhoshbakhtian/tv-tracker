@@ -9,9 +9,9 @@ const config: Config = {
     extend: {
       colors: {
         store: {
-          blue: '#001A6E',   // Blockbuster Blue
-          yellow: '#FFCC00', // Blockbuster Yellow
-          neon: '#39FF14',   // Lobby Neon
+          blue: '#001A6E',   
+          yellow: '#FFCC00', 
+          neon: '#39FF14',   
         }
       }
     },
